@@ -1,3 +1,23 @@
+from picamera import PiCamera
+from gpiozero import Button
+from time import sleep
+
+camera = PiCamera()
+button = Button(14)
+
+
+def TakePicture(name, delay=1):
+    camera.start_preview(alpha=192)
+    sleep (delay)
+    camera.capture("/home/pi/{}.jpg".format(name))
+    #applyEffect()
+    camera.image_effect = 'colorswap'
+    camera.stop_preview()
+
+button.wait_for_press()
+
+TakePicture("tweetpic",  3)
+
 #twitter
 from twython import Twython
 
@@ -13,17 +33,13 @@ twitter = Twython(
       access_token,
       access_token_secret
   )
-import random
 
-messages = [
-      "Hello world #Picademy",
-      "Team RaspTweetCam are the best! #Picademy",
-      "We love Rapsberry Pi! #Picademy",
-  ]
+messages = "Hello world! Team @RaspTweetCam are the best! #Picademy"
+
+with open('/home/pi/tweetpic.jpg', 'rb') as photo:
+      twitter.update_status_with_media(status=messages, media=photo)
   
-message = random.choice(messages)
-twitter.update_status(status=message)
-print("Tweeted: %s" % message)
+print("Tweeted: %s" % messages)
 
 
 
